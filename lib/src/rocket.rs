@@ -4,6 +4,7 @@ use std::cmp::min;
 use std::net::SocketAddr;
 use std::io::{self, Write};
 use std::mem;
+use std::time::Duration;
 
 use yansi::Paint;
 use state::Container;
@@ -665,6 +666,9 @@ impl Rocket {
                 Ok(server) => server,
                 Err(e) => return LaunchError::from(e)
             };
+            server.keep_alive(Some(Duration::new(5, 0)));
+            server.set_read_timeout(Some(Duration::new(3, 0)));
+            server.set_write_timeout(Some(Duration::new(10, 0)));
 
             // Determine the address and port we actually binded to.
             match server.local_addr() {
